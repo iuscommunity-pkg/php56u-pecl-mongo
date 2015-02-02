@@ -1,0 +1,210 @@
+%global pecl_name mongo
+%global real_name php-pecl-mongo
+%global php_base php56u
+# After 40-json
+%global ini_name    50-%{pecl_name}.ini
+
+# RPM 4.8
+%{?filter_provides_in: %filter_provides_in %{php_extdir}/.*\.so$}
+%{?filter_setup}
+# RPM 4.9
+%global __provides_exclude_from %{?__provides_exclude_from:%__provides_exclude_from|}%{php_extdir}/.*\\.so$
+
+
+Summary:      PHP MongoDB database driver
+Name:         %{php_base}-pecl-mongo
+Version:      1.6.0
+Release:      2.ius%{?dist}
+License:      ASL 2.0
+Group:        Development/Languages
+URL:          http://pecl.php.net/package/%{pecl_name}
+Source0:      http://pecl.php.net/get/%{pecl_name}-%{version}.tgz
+Source1:      %{pecl_name}.ini
+BuildRequires: %{php_base}-devel
+BuildRequires: %{php_base}-pear
+BuildRequires: cyrus-sasl-devel
+
+Requires(post): %{php_base}-pear
+Requires(postun): %{php_base}-pear
+
+Requires:     %{php_base}(zend-abi) = %{php_zend_api}
+Requires:     %{php_base}(api) = %{php_core_api}
+
+Provides:     php-%{pecl_name} = %{version}
+Provides:     php-%{pecl_name}%{?_isa} = %{version}
+Provides:     php-pecl(%{pecl_name}) = %{version}
+Provides:     php-pecl(%{pecl_name})%{?_isa} = %{version}
+Provides:     %{php_base}-%{pecl_name} = %{version}
+Provides:     %{php_base}-%{pecl_name}%{?_isa} = %{version}
+Provides:     %{php_base}-pecl(%{pecl_name}) = %{version}
+Provides:     %{php_base}-pecl(%{pecl_name})%{?_isa} = %{version}
+
+Provides:     %{real_name} = %{version}
+Conflicts:    %{real_name} < %{version}
+
+
+%description
+This package provides an interface for communicating with the MongoDB database
+in PHP.
+
+
+%prep
+%setup -c -q
+mv %{pecl_name}-%{version} NTS
+cp -pr NTS ZTS
+
+
+%build
+cd NTS
+%{_bindir}/phpize
+%configure  \
+  --with-mongo-sasl \
+  --with-php-config=%{_bindir}/php-config
+%{__make} %{?_smp_mflags}
+
+cd ../ZTS
+%{_bindir}/zts-phpize
+%configure  \
+  --with-mongo-sasl \
+  --with-php-config=%{_bindir}/zts-php-config
+%{__make} %{?_smp_mflags}
+
+
+%install
+%{__make} -C NTS install INSTALL_ROOT=%{buildroot}
+
+# Drop in the bit of configuration
+%{__install} -Dm0644 %{SOURCE1} %{buildroot}%{php_inidir}/%{ini_name}
+
+# Install XML package description
+%{__install} -Dm0644 package.xml %{buildroot}%{pecl_xmldir}/%{name}.xml
+
+make -C ZTS install INSTALL_ROOT=%{buildroot}
+%{__install} -Dm0644 %{SOURCE1} %{buildroot}%{php_ztsinidir}/%{ini_name}
+
+# Documentation
+for i in $(grep 'role="doc"' package.xml | sed -e 's/^.*name="//;s/".*$//')
+do %{__install} -Dpm0644 NTS/$i %{buildroot}%{pecl_docdir}/%{pecl_name}/$i
+done
+
+
+%post
+%{pecl_install} %{pecl_xmldir}/%{name}.xml >/dev/null || :
+
+
+%postun
+if [ "$1" -eq "0" ]; then
+   %{pecl_uninstall} %{pecl_name} >/dev/null || :
+fi
+
+
+%check
+: Minimal load test for NTS extension
+%{__php} -n \
+    -d extension=%{buildroot}%{php_extdir}/%{pecl_name}.so \
+    -i | grep "MongoDB Support => enabled"
+
+: Minimal load test for ZTS extension
+%{__ztsphp} -n \
+    -d extension=%{buildroot}%{php_ztsextdir}/%{pecl_name}.so \
+    -i | grep "MongoDB Support => enabled"
+
+
+%files
+%doc %{pecl_docdir}/%{pecl_name}
+%{pecl_xmldir}/%{name}.xml
+%config(noreplace) %{php_inidir}/%{ini_name}
+%{php_extdir}/%{pecl_name}.so
+%config(noreplace) %{php_ztsinidir}/%{ini_name}
+%{php_ztsextdir}/%{pecl_name}.so
+
+
+%changelog
+* Mon Feb 02 2015 Ben Harper <ben.harper@rackspace.com> - 1.6.0-2.ius
+- porting from php55u-pecl-mongo
+
+* Thu Jan 29 2015 Ben Harper <ben.harper@rackspace.com> - 1.6.0-1.ius
+- Latest sources from upstream
+
+* Tue Nov 11 2014 Ben Harper <ben.harper@rackspace.com> - 1.5.8-1.ius
+- Latest sources from upstream
+
+* Fri Oct 10 2014 Carl George <carl.george@rackspace.com> - 1.5.7-2.ius
+- Add numerical prefix to extension configuration file
+- Enable SASL support
+- Install doc in pecl doc_dir
+- Build ZTS extension
+- Conflict with stock package
+- Use same provides as stock package
+- Directly require the correct pear package, not /usr/bin/pecl
+
+* Tue Sep 16 2014 Carl George <carl.george@rackspace.com> - 1.5.7-1.ius
+- Latest sources from upstream
+- Move config from a here doc to separate source file
+
+* Thu Jul 31 2014 Carl George <carl.george@rackspace.com> - 1.5.5-1.ius
+- Latest sources from upstream
+
+* Wed Jun 18 2014 Carl George <carl.george@rackspace.com> - 1.5.4-1.ius
+- Latest sources from upstream
+
+* Fri Jun 06 2014 Ben Harper <ben.harper@rackspace.com> - 1.5.3-1.ius
+- Latest sources from upstream
+
+* Wed May 07 2014 Carl George <carl.george@rackspace.com> - 1.5.2-1.ius
+- Latest sources from upstream
+
+* Mon Apr 07 2014 Ben Harper <ben.harper@rackspace.com> - 1.5.1-1.ius
+- Latest sources from upstream
+
+* Fri Apr 04 2014 Ben Harper <ben.harper@rackspace.com> - 1.5.0-1.ius
+- Latest sources from upstream
+
+* Fri Jan 24 2014 Ben Harper <ben.harper@rackspace.com> - 1.4.5-1
+- porting from php54-pecl-mongo and updating to latest release
+
+* Wed Nov 06 2013 Ben Harper <ben.harper@rackspace.com> - 1.3.2-2
+- adding provides per LP bug 1248285
+
+* Mon Dec 31 2012 Ben Harper <ben.harper@rackspace.com> - 1.3.2-1
+- porting from EPEL
+- upsteam 1.3.2 
+
+* Sat Jul 28 2012 Christof Damian <christof@damian.net> - 1.2.12-1
+- upstream 1.2.12
+
+* Sat Jul 21 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.2.10-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
+
+* Wed May  9 2012 Christof Damian <christof@damian.net> - 1.2.10-1
+- upstream 1.2.10
+
+* Sat Mar  3 2012 Christof Damian <christof@damian.net> - 1.2.9-1
+- upstream 1.2.9
+
+* Thu Jan 19 2012 Remi Collet <remi@fedoraproject.org> - 1.2.7-1
+- update to 1.2.7 for php 5.4
+- fix filters
+
+* Sat Jan 14 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.2.1-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
+
+* Sun Jul 17 2011 Christof Damian <christof@damian.net> - 1.2.1-1
+- upstream 1.2.1
+
+* Wed Feb 09 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.0.10-5
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
+
+* Mon Oct 25 2010 Christof Damian <christof@damian.net> - 1.0.10-4
+- added link to option docs
+
+* Sat Oct 23 2010 Christof Damian <christof@damian.net> - 1.0.10-3
+- fix post
+- add example config with sensible defaults
+- add conditionals for EPEL + fix for check
+
+* Fri Oct 22 2010 Christof Damian <christof@damian.net> - 1.0.10-2
+- fixes for package review: requires and warnings
+
+* Wed Oct 20 2010 Christof Damian <christof@damian.net> - 1.0.10-1
+- Initial RPM
