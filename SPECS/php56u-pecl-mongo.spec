@@ -13,8 +13,8 @@
 
 Summary:      PHP MongoDB database driver
 Name:         %{php_base}-pecl-mongo
-Version:      1.6.0
-Release:      2.ius%{?dist}
+Version:      1.6.1
+Release:      1.ius%{?dist}
 License:      ASL 2.0
 Group:        Development/Languages
 URL:          http://pecl.php.net/package/%{pecl_name}
@@ -120,6 +120,9 @@ fi
 
 
 %changelog
+* Thu Feb 05 2015 Ben Harper <ben.harper@rackspace.com> - 1.6.1-1.ius
+- Latest sources from upstream
+
 * Mon Feb 02 2015 Ben Harper <ben.harper@rackspace.com> - 1.6.0-2.ius
 - porting from php55u-pecl-mongo
 
