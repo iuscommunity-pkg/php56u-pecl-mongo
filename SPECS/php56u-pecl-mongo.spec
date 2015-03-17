@@ -23,6 +23,7 @@ Source1:      %{pecl_name}.ini
 BuildRequires: %{php_base}-devel
 BuildRequires: %{php_base}-pear
 BuildRequires: cyrus-sasl-devel
+BuildRequires: openssl-devel
 
 Requires(post): %{php_base}-pear
 Requires(postun): %{php_base}-pear
@@ -122,6 +123,7 @@ fi
 %changelog
 * Tue Mar 17 2015 Carl George <carl.george@rackspace.com> - 1.6.5-1.ius
 - Latest upstream
+- Add build dependency on openssl-devel
 
 * Tue Mar 10 2015 Ben Harper <ben.harper@rackspace.com> - 1.6.3-2.ius
 - Rebuilding against php56u-5.6.6-2.ius as it is now using bundled PCRE.
