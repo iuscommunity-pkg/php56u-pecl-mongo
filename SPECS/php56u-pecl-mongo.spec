@@ -13,7 +13,7 @@
 
 Summary:      PHP MongoDB database driver
 Name:         %{php_base}-pecl-mongo
-Version:      1.6.5
+Version:      1.6.6
 Release:      1.ius%{?dist}
 License:      ASL 2.0
 Group:        Development/Languages
@@ -121,6 +121,9 @@ fi
 
 
 %changelog
+* Mon Mar 30 2015 Carl George <carl.george@rackspace.com> - 1.6.6-1.ius
+- Latest upstream
+
 * Tue Mar 17 2015 Carl George <carl.george@rackspace.com> - 1.6.5-1.ius
 - Latest upstream
 - Add build dependency on openssl-devel
