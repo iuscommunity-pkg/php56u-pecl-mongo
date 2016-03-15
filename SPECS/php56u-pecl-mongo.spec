@@ -92,7 +92,7 @@ popd
 %{__install} -Dm0644 %{SOURCE1} %{buildroot}%{php_inidir}/%{ini_name}
 
 # Install XML package description
-%{__install} -Dm0644 package.xml %{buildroot}%{pecl_xmldir}/%{name}.xml
+%{__install} -Dm0644 package.xml %{buildroot}%{pecl_xmldir}/%{pecl_name}.xml
 
 %if %{with_zts}
 make -C ZTS install INSTALL_ROOT=%{buildroot}
@@ -106,7 +106,7 @@ done
 
 
 %post
-%{pecl_install} %{pecl_xmldir}/%{name}.xml >/dev/null || :
+%{pecl_install} %{pecl_xmldir}/%{pecl_name}.xml >/dev/null || :
 
 
 %postun
@@ -131,7 +131,7 @@ fi
 
 %files
 %doc %{pecl_docdir}/%{pecl_name}
-%{pecl_xmldir}/%{name}.xml
+%{pecl_xmldir}/%{pecl_name}.xml
 %config(noreplace) %{php_inidir}/%{ini_name}
 %{php_extdir}/%{pecl_name}.so
 %if %{with_zts}
@@ -144,6 +144,7 @@ fi
 * Tue Mar 15 2016 Carl George <carl.george@rackspace.com> - 1.6.12-2.ius
 - Clean up provides
 - ZTS clean up
+- Install package.xml as %%{pecl_name}.xml, not %%{name}.xml
 
 * Mon Nov 30 2015 Ben Harper <ben.harper@rackspace.com> - 1.6.12-1.ius
 - Latest upstream
