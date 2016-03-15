@@ -1,5 +1,4 @@
 %global pecl_name mongo
-%global real_name php-pecl-mongo
 %global php_base php56u
 # After 40-json
 %global ini_name    50-%{pecl_name}.ini
@@ -14,7 +13,7 @@
 Summary:      PHP MongoDB database driver
 Name:         %{php_base}-pecl-mongo
 Version:      1.6.12
-Release:      1.ius%{?dist}
+Release:      2.ius%{?dist}
 License:      ASL 2.0
 Group:        Development/Languages
 URL:          http://pecl.php.net/package/%{pecl_name}
@@ -31,17 +30,24 @@ Requires(postun): %{php_base}-pear
 Requires:     %{php_base}(zend-abi) = %{php_zend_api}
 Requires:     %{php_base}(api) = %{php_core_api}
 
+# provide the stock name
+Provides:     php-pecl-%{pecl_name} = %{version}
+Provides:     php-pecl-%{pecl_name}%{?_isa} = %{version}
+
+# provide the stock and IUS names without pecl
 Provides:     php-%{pecl_name} = %{version}
 Provides:     php-%{pecl_name}%{?_isa} = %{version}
-Provides:     php-pecl(%{pecl_name}) = %{version}
-Provides:     php-pecl(%{pecl_name})%{?_isa} = %{version}
 Provides:     %{php_base}-%{pecl_name} = %{version}
 Provides:     %{php_base}-%{pecl_name}%{?_isa} = %{version}
+
+# provide the stock and IUS names in pecl() format
+Provides:     php-pecl(%{pecl_name}) = %{version}
+Provides:     php-pecl(%{pecl_name})%{?_isa} = %{version}
 Provides:     %{php_base}-pecl(%{pecl_name}) = %{version}
 Provides:     %{php_base}-pecl(%{pecl_name})%{?_isa} = %{version}
 
-Provides:     %{real_name} = %{version}
-Conflicts:    %{real_name} < %{version}
+# conflict with the stock name
+Conflicts:    php-pecl-%{pecl_name} < %{version}
 
 
 %description
@@ -121,6 +127,9 @@ fi
 
 
 %changelog
+* Tue Mar 15 2016 Carl George <carl.george@rackspace.com> - 1.6.12-2.ius
+- Clean up provides
+
 * Mon Nov 30 2015 Ben Harper <ben.harper@rackspace.com> - 1.6.12-1.ius
 - Latest upstream
 
