@@ -6,9 +6,8 @@
 
 # RPM 4.8
 %{?filter_provides_in: %filter_provides_in %{php_extdir}/.*\.so$}
+%{?filter_provides_in: %filter_provides_in %{php_ztsextdir}/.*\.so$}
 %{?filter_setup}
-# RPM 4.9
-%global __provides_exclude_from %{?__provides_exclude_from:%__provides_exclude_from|}%{php_extdir}/.*\\.so$
 
 
 Summary:      PHP MongoDB database driver
@@ -141,6 +140,9 @@ fi
 
 
 %changelog
+* Thu Jun 16 2016 Ben Harper <ben.harper@rackspace.com> - 1.6.14-2.ius
+- update filters to include zts
+
 * Wed Apr 27 2016 Ben Harper <ben.harper@rackspace.com> - 1.6.14-1.ius
 - Latest upstream
 
