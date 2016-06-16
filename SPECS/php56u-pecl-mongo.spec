@@ -13,7 +13,7 @@
 Summary:      PHP MongoDB database driver
 Name:         %{php_base}-pecl-mongo
 Version:      1.6.14
-Release:      1.ius%{?dist}
+Release:      2.ius%{?dist}
 License:      ASL 2.0
 Group:        Development/Languages
 URL:          http://pecl.php.net/package/%{pecl_name}
