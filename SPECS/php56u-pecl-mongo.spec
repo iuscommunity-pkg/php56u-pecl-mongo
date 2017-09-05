@@ -12,8 +12,8 @@
 
 Summary:      PHP MongoDB database driver
 Name:         %{php_base}-pecl-mongo
-Version:      1.6.14
-Release:      2.ius%{?dist}
+Version:      1.6.16
+Release:      1.ius%{?dist}
 License:      ASL 2.0
 Group:        Development/Languages
 URL:          http://pecl.php.net/package/%{pecl_name}
@@ -140,6 +140,9 @@ fi
 
 
 %changelog
+* Tue Sep 05 2017 Ben Harper <ben.harper@rackspace.com> - 1.6.16-1.ius
+- Latest upstream
+
 * Thu Jun 16 2016 Ben Harper <ben.harper@rackspace.com> - 1.6.14-2.ius
 - update filters to include zts
 
